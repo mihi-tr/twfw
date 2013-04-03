@@ -22,8 +22,10 @@
   "get a url from twitter api v1 and return a map"
   [url kv]
   (Thread/sleep 25000)
-  (let [url (str api-url url ".json?" (make-params kv))]
-            (json/read-str (:body (http/get url)))))
+  (try
+    (let [url (str api-url url ".json?" (make-params kv))]
+      (json/read-str (:body (http/get url))))
+    (catch Exception e nil)))
     
 
 (defn get-screen-name-raw
@@ -56,6 +58,8 @@
     (spit filename 
           (gexf/write
            (into []
-                 (reduce concat (map create-edges (get-followers username)))))))) 
+                 (reduce concat 
+                         (map create-edges 
+                              (get-followers username)))))))) 
     
   
